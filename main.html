@@ -1,16 +1,130 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock, Paper, Scissors Game</title>
+    <style>
+        .game-container {
+            text-align: center;
+        }
+        
+        .btn {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+    <div class="game-container">
+        <label for="game-number">Enter the number of turns:</label>
+        <input type="number" id="game-number" data-ns-test="game-number">
+        <button id="play-game" data-ns-test="play-game">Play</button>
+        <p>Rounds left: <span id="rounds-left" data-ns-test="rounds-left">0</span></p>
+        <p>User Points: <span id="user-points" data-ns-test="user-points">0</span></p>
+        <p>Computer Points: <span id="computer-points" data-ns-test="computer-points">0</span></p>
+        <p>Result of the round: <span id="round-result" data-ns-test="round-result"></span></p>
+        <p>Computer chooses: <span id="computer-choose" data-ns-test="computer-choose"></span></p>
+        <p>Game Result: <span id="game-result" data-ns-test="game-result"></span></p>
+        <div>
+            <button class="btn" data-ns-test="rock">Rock</button>
+            <button class="btn" data-ns-test="paper">Paper</button>
+            <button class="btn" data-ns-test="scissors">Scissors</button>
+        </div>
+    </div>
 
+    <script>
+        const gameNumberInput = document.getElementById("game-number");
+        const playGameButton = document.getElementById("play-game");
+        const roundsLeftSpan = document.getElementById("rounds-left");
+        const userPointsSpan = document.getElementById("user-points");
+        const computerPointsSpan = document.getElementById("computer-points");
+        const roundResultSpan = document.getElementById("round-result");
+        const computerChooseSpan = document.getElementById("computer-choose");
+        const gameResultSpan = document.getElementById("game-result");
+
+        let roundsLeft = 0;
+        let userPoints = 0;
+        let computerPoints = 0;
+
+        playGameButton.addEventListener("click", () => {
+            roundsLeft = parseInt(gameNumberInput.value);
+            userPoints = 0;
+            computerPoints = 0;
+            updateScoreboard();
+            if (roundsLeft > 0) {
+                enableGameButtons();
+            }
+        });
+
+        const gameOptions = ["ROCK", "PAPER", "SCISSORS"];
+
+        document.querySelectorAll(".btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const userChoice = button.textContent.toUpperCase();
+                const computerChoice = getRandomChoice();
+                const result = determineRoundResult(userChoice, computerChoice,userPoints,computerPoints);
+                updateRoundResult(userChoice, computerChoice, result);
+                updateScoreboard();
+                roundsLeft--;
+                if (roundsLeft === 0) {
+                    endGame();
+                }
+            });
+        });
+
+        function getRandomChoice() {
+            const randomIndex = Math.floor(Math.random() * 3);
+            return gameOptions[randomIndex];
+        }
+
+        function determineRoundResult(userChoice, computerChoice) {
+            if (userChoice === computerChoice) {
+                return "TIE";
+            } else if (
+                (userChoice === "ROCK" && computerChoice === "SCISSORS") ||
+                (userChoice === "PAPER" && computerChoice === "ROCK") ||
+                (userChoice === "SCISSORS" && computerChoice === "PAPER")
+            ) {
+                userPoints++;
+                return "WON";
+            } else {
+                computerPoints++
+                return "LOSE";
+            }
+        }
+
+        function updateRoundResult(userChoice, computerChoice, result) {
+            roundResultSpan.textContent = result;
+            computerChooseSpan.textContent = computerChoice;
+        }
+
+        function updateScoreboard() {
+            roundsLeftSpan.textContent = Number(roundsLeft-1);
+            userPointsSpan.textContent = userPoints;
+            computerPointsSpan.textContent = computerPoints;
+        }
+
+        function enableGameButtons() {
+            document.querySelectorAll(".btn").forEach(button => {
+                button.disabled = false;
+            });
+        }
+
+        function endGame() {
+            document.querySelectorAll(".btn").forEach(button => {
+                button.disabled = true;
+            });
+            if (userPoints > computerPoints) {
+                gameResultSpan.textContent = "WON";
+            } else if (userPoints < computerPoints) {
+                gameResultSpan.textContent = "LOSE";
+            } else {
+                gameResultSpan.textContent = "TIE";
+            }
+        }
+    </script>
 </body>
-
 </html>
